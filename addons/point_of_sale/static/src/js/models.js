@@ -969,6 +969,11 @@ function openerp_pos_models(instance, module){ //module is instance.point_of_sal
         get_amount: function(){
             return this.amount;
         },
+        get_trackingcode: function()
+        {
+            //alert($('#x_ntrackingcode').val());
+            return $('#x_ntrackingcode').val();
+        },
         get_amount_str: function(){
             return this.amount.toFixed(this.pos.currency.decimals);
         },
@@ -990,7 +995,8 @@ function openerp_pos_models(instance, module){ //module is instance.point_of_sal
                 statement_id: this.cashregister.id,
                 account_id: this.cashregister.account_id[0],
                 journal_id: this.cashregister.journal_id[0],
-                amount: this.get_amount()
+                amount: this.get_amount(),
+                x_ntrackingcode: this.get_trackingcode(),
             };
         },
         //exports as JSON for receipt printing

@@ -574,6 +574,7 @@ class pos_order(osv.osv):
             'statement_id': ui_paymentline['statement_id'],
             'payment_name': ui_paymentline.get('note',False),
             'journal':      ui_paymentline['journal_id'],
+            'x_ntrackingcode': ui_paymentline['x_ntrackingcode'],
         }
 
     def _process_order(self, cr, uid, order, context=None):
@@ -720,6 +721,7 @@ class pos_order(osv.osv):
         'nb_print': fields.integer('Number of Print', readonly=True, copy=False),
         'pos_reference': fields.char('Receipt Ref', readonly=True, copy=False),
         'sale_journal': fields.related('session_id', 'config_id', 'journal_id', relation='account.journal', type='many2one', string='Sale Journal', store=True, readonly=True),
+        'x_nftrackingcode': fields.text('Tracking Code'),
     }
 
     def _default_session(self, cr, uid, context=None):
@@ -853,6 +855,7 @@ class pos_order(osv.osv):
         order = self.browse(cr, uid, order_id, context=context)
         args = {
             'amount': data['amount'],
+            'x_ntrackingcode': data['x_ntrackingcode'],
             'date': data.get('payment_date', time.strftime('%Y-%m-%d')),
             'name': order.name + ': ' + (data.get('payment_name', '') or ''),
             'partner_id': order.partner_id and self.pool.get("res.partner")._find_accounting_partner(order.partner_id).id or False,

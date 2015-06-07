@@ -877,6 +877,11 @@
                 t-att-type="widget.decimal_point === '.' ? 'number' : 'text'"
                 t-attf-pattern="[0-9]+([\\#{widget.decimal_point || '.' }][0-9]+)?"
                 step="0.01" t-att-value="line.get_amount_str()" />
+            <div class='paymentline-name'>
+                Tracking Code
+            </div>
+            <input class='paymentline-input' id="x_ntrackingcode"
+                t-att-value="line.x_ntrackingcode" />
             <span  class='paymentline-delete'>
                 <img src="/point_of_sale/static/src/img/search_reset.gif" />
             </span>
