@@ -313,6 +313,10 @@
                                 widget="selection"
                                 on_change="onchange_journal(journal_id, line_cr_ids, False, partner_id, date, amount, type, company_id, context)"
                                 string="Payment Method"/>
+                             <field name="cheque_id" 
+                             	on_change="onchange_cheque_id(cheque_id, context)" > 
+                             </field>  
+                             <field name="cheque_detail_id"/>
                         </group>
                         
                         <group>

@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!--Cheque_Form -->
+        <record id="view_form_cheque" model="ir.ui.view">
+            <field name="name">Cheque_Form</field>
+            <field name="model">cheque</field>
+            <field name="arch" type="xml">
+                <form string="form_view_cheque">
+                    <group>
+                        <field name="bank_account_id"></field>
+                        <field name="sequence"></field>
+                        <field name="date_issue"></field>
+                        <field name="first_page_serial"></field>
+                        <field name="pages"></field>
+                        <field name="cheque_detail_id" readonly="1"></field>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <!-- Cheque List view -->
+        <record id="view_tree_cheque" model="ir.ui.view">
+            <field name="name">Cheque_Tree</field>
+            <field name="model">cheque</field>
+            <field name="arch" type="xml">
+		    	<tree delete="false">
+		    		<field name="id"></field>
+		          	<field name="date_issue"/>
+		          	<field name="sequence" />
+		          	<field name="cheque_detail_id"/>
+		    	</tree>
+            </field>
+        </record>      
+		<!-- Cheque Detail List view -->
+	    <record id="view_form_cheque_detail" model="ir.ui.view">
+            <field name="name">Cheque_Detail_Form</field>
+            <field name="model">cheque_detail</field>
+            <field name="arch" type="xml">
+		    	<tree delete="false">
+		    		<field name="cheque_id"></field>
+	                <field name="sequence"></field>
+	               	<field name="date_cheque"></field>
+	                <field name="amount"></field>
+	                <field name="ref_no"></field>
+	                <field name="state"></field>
+		    	</tree>
+            </field>
+        </record>
+        <!-- Action to open Cheque list -->
+        <act_window id="action_cheque"
+                    name="Cheque Book"
+                    res_model="cheque"
+                    view_mode="tree,form"/>           
+         <!-- Action to open Cheque list -->
+        <act_window id="action_cheque_cheque_detail"
+                    name="Cheque Detail"
+                    res_model="cheque_detail"
+                    view_mode="tree,form"/>
+         <!--Menu item to open Cheque list-->
+        <menuitem id="menu_cheque"
+                  name="Cheque"
+                  parent="account.menu_finance_configuration"
+                  sequence="10"
+                  action="action_cheque"/>    
+	    <!-- Menu Items -->
+	    <menuitem id="menu_cheque"
+	    	name="Cheque" parent="account.menu_finance_configuration"/>
+         <!--Menu item to open Cheque list-->
+        <menuitem id="menu_cheque_cheque_book"
+                  name="Cheque Book"
+                  parent="menu_cheque"
+                  sequence="10"
+                  action="action_cheque"/>
+	    <menuitem id="menu_cheque_cheque_detail"
+		      name="Cheque Detail"
+		      parent="menu_cheque"
+		      sequence="20"
+		      action="action_cheque_cheque_detail" />
+    </data>
+</openerp>
