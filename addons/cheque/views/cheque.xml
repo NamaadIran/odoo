@@ -23,7 +23,7 @@
             <field name="name">Cheque_Tree</field>
             <field name="model">cheque</field>
             <field name="arch" type="xml">
-		    	<tree delete="false">
+		    	<tree>
 		    		<field name="id"></field>
 		          	<field name="date_issue"/>
 		          	<field name="sequence" />

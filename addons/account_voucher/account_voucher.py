@@ -356,11 +356,10 @@ class account_voucher(osv.osv):
             help='The specific rate that will be used, in this voucher, between the selected currency (in \'Payment Rate Currency\' field)  and the voucher currency.'),
         'paid_amount_in_company_currency': fields.function(_paid_amount_in_company_currency, string='Paid Amount in Company Currency', type='float', readonly=True),
         'is_multi_currency': fields.boolean('Multi Currency Voucher', help='Fields with internal purpose only that depicts if the voucher is a multi currency one or not'),
-        'currency_help_label': fields.function(_fnct_currency_help_label, type='text', string="Helping Sentence", help="This sentence helps you to know how to specify the payment rate by giving you the direct effect it has"),
-        
-        'bank_id' : fields.related('journal_id', 'bank_id', type='one2many', relation='res.partner.bank', string='Bank Id'),
-        'cheque_id' : fields.related('bank_id', 'cheque_id', type='many2one', relation='cheque', string='Cheque Id'),
-        'cheque_detail_id' : fields.related('cheque_id', 'cheque_detail_id', type='many2one', relation='cheque_detail', string='Cheque Detail Id'), 
+        'currency_help_label': fields.function(_fnct_currency_help_label, type='text', string="Helping Sentence", help="This sentence helps you to know how to specify the payment rate by giving you the direct effect it has"),   
+#         'bank_id' : fields.one2many('res.partner.bank','journal_id','حساب بانکی'),
+        'cheque_id' : fields.many2one('cheque', 'دسته چک'),
+        'cheque_detail_id' : fields.many2one('cheque_detail', 'برگه چک'), 
     }
     _defaults = {
         'period_id': _get_period,
@@ -892,7 +891,7 @@ class account_voucher(osv.osv):
         vals['value'].update({
             'currency_id': currency_id,
             'payment_rate_currency_id': currency_id,
-            'period_id': period_ids and period_ids[0] or False
+            'period_id': period_ids and period_ids[0] or False,
         })
         #in case we want to register the payment directly from an invoice, it's confusing to allow to switch the journal 
         #without seeing that the amount is expressed in the journal currency, and not in the invoice currency. So to avoid
@@ -903,22 +902,24 @@ class account_voucher(osv.osv):
         if partner_id:
             res = self.onchange_partner_id(cr, uid, ids, partner_id, journal_id, amount, currency_id, ttype, date, context)
             for key in res.keys():
-                vals[key].update(res[key])
-                
-        bank_pool = self.pool.get('res.partner.bank')
-        bank_id = bank_pool.search(cr, uid, [('journal_id', '=', journal_id)], context=context)
-#         bank_obj = bank_pool.browse(cr, uid, bank_id, context=context)
-        cheque_pool = self.pool.get('cheque')
-        cheque_id=cheque_pool.search(cr, uid,[('bank_account_id', '=', bank_id)], context=context)
-        vals['value']['bank_id'] = bank_id
-        vals['value']['cheque_id'] = cheque_id
-        
-        return {'value': vals ,'domain': {'cheque_id':[('id','in',cheque_id)]}}
+                vals[key].update(res[key])         
+        return vals
     
     def onchange_cheque_id(self, cr, uid, ids, cheque_id, context=None):
         cheque_pool = self.pool.get('cheque_detail')
         cheque_detail_id=cheque_pool.search(cr, uid,[('cheque_id', '=', cheque_id)], context=context)
         return {'domain': {'cheque_detail_id':[('id','in',cheque_detail_id)]}}
+    
+    def onchange_account_id(self, cr, uid, ids, journal_id, context=None):
+        bank_pool = self.pool.get('res.partner.bank')
+        bank_id = bank_pool.search(cr, uid, [('journal_id', '=', journal_id)], context=context)
+#         bank_obj = bank_pool.browse(cr, uid, bank_id, context=context)
+        cheque_pool = self.pool.get('cheque')
+        cheque_id=cheque_pool.search(cr, uid,[('bank_account_id', '=', bank_id)], context=context)
+#         vals['value']['bank_id'] = bank_id
+#         vals['value']['cheque_id'] = cheque_id
+#         vals['value'].update({ 'cheque_id' : cheque_id })
+        return {'domain': {'cheque_id':[('id','in',cheque_id)]}}
 
     def onchange_company(self, cr, uid, ids, partner_id, journal_id, currency_id, company_id, context=None):
         """

@@ -312,11 +312,10 @@
                                 invisible="context.get('line_type', False)"
                                 widget="selection"
                                 on_change="onchange_journal(journal_id, line_cr_ids, False, partner_id, date, amount, type, company_id, context)"
-                                string="Payment Method"/>
-                             <field name="cheque_id" 
-                             	on_change="onchange_cheque_id(cheque_id, context)" > 
-                             </field>  
-                             <field name="cheque_detail_id"/>
+                                string="Payment Method"/> 
+                             <field name="cheque_id"
+                             	on_change="onchange_cheque_id(cheque_id, context)"/>
+                             <field name="cheque_detail_id"/>  
                         </group>
                         
                         <group>
@@ -328,6 +327,7 @@
 
                             <field name="account_id"
                                 widget="selection"
+                                on_change="onchange_account_id(journal_id, context)"
                                 invisible="True"/>
                             <field name="pre_line" invisible="1"/>
                             <field name="type" invisible="True"/>

@@ -15,6 +15,7 @@ class Cheque(models.Model):
     date_issue = fields.Date('تاریخ صدور')
     first_page_serial = fields.Integer(' شماره برگه اول ')
     pages = fields.Integer('تعدادبرگه')
+#     account_voucher_id = fields.One2many('account.voucher', 'cheque_id', 'Accounting Voucher')
     
     
     @api.model
@@ -32,7 +33,7 @@ class ChequeDetail(models.Model):
     _name = "cheque_detail"
     _description = "cheque detail"
     _order = 'cheque_id,sequence'
-    cheque_id = fields.Many2one('cheque','دسته چک')
+    cheque_id = fields.Many2one('cheque','دسته چک', ondelete='cascade')
     sequence = fields.Integer(' شماره برگه چک ')
     amount = fields.Float('مبلغ')
     date_cheque = fields.Date(' تاریخ چک ')
