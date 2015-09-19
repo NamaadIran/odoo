@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from openerp import models, fields, api
-from _tkinter import create
-from openerp.addons.google_calendar.google_calendar import Create
 
 
 class Cheque(models.Model):
@@ -15,16 +13,13 @@ class Cheque(models.Model):
     date_issue = fields.Date('تاریخ صدور')
     first_page_serial = fields.Integer(' شماره برگه اول ')
     pages = fields.Integer('تعدادبرگه')
-#     account_voucher_id = fields.One2many('account.voucher', 'cheque_id', 'Accounting Voucher')
-    
     
     @api.model
-    @api.returns('self', lambda value:value.id)
     def create(self, vals):
         record=models.Model.create(self, vals)
         for i in xrange(vals['first_page_serial'],vals['first_page_serial']+vals['pages']):
             self.env['cheque_detail'].create({
-            'cheque_id': record['id'],'sequence': i,'state': 'draft'
+            'cheque_id': record['id'],'sequence': i,'state': 'New'
             })
         return record
     
@@ -37,8 +32,8 @@ class ChequeDetail(models.Model):
     sequence = fields.Integer(' شماره برگه چک ')
     amount = fields.Float('مبلغ')
     date_cheque = fields.Date(' تاریخ چک ')
-    ref_no = fields.Integer(' شماره ارجاع ')
+    reference = fields.Char(' شماره ارجاع ')
     state = fields.Selection(
-        [('draft','New'), ('open','Started'),('done','Closed')],
+        [('New','جدید'), ('Issued','صادرشده'),('Invalid','ابطال شده')],
         'State')
 

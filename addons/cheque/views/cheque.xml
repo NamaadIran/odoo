@@ -41,7 +41,7 @@
 	                <field name="sequence"></field>
 	               	<field name="date_cheque"></field>
 	                <field name="amount"></field>
-	                <field name="ref_no"></field>
+	                <field name="reference"></field>
 	                <field name="state"></field>
 		    	</tree>
             </field>

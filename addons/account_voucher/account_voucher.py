@@ -28,6 +28,7 @@ from openerp.tools.translate import _
 from openerp.tools import float_compare
 from openerp.report import report_sxw
 import openerp
+from openerp import api,models
 
 class res_currency(osv.osv):
     _inherit = "res.currency"
@@ -902,23 +903,23 @@ class account_voucher(osv.osv):
         if partner_id:
             res = self.onchange_partner_id(cr, uid, ids, partner_id, journal_id, amount, currency_id, ttype, date, context)
             for key in res.keys():
-                vals[key].update(res[key])         
+                vals[key].update(res[key])
+        vals['value'].update({
+            'cheque_id':'false',
+            'cheque_detail_id':'false'
+        })         
         return vals
     
     def onchange_cheque_id(self, cr, uid, ids, cheque_id, context=None):
         cheque_pool = self.pool.get('cheque_detail')
         cheque_detail_id=cheque_pool.search(cr, uid,[('cheque_id', '=', cheque_id)], context=context)
-        return {'domain': {'cheque_detail_id':[('id','in',cheque_detail_id)]}}
+        return {'domain': {'cheque_detail_id':['&',('id','in',cheque_detail_id),('state','=','New')]}}
     
     def onchange_account_id(self, cr, uid, ids, journal_id, context=None):
         bank_pool = self.pool.get('res.partner.bank')
         bank_id = bank_pool.search(cr, uid, [('journal_id', '=', journal_id)], context=context)
-#         bank_obj = bank_pool.browse(cr, uid, bank_id, context=context)
         cheque_pool = self.pool.get('cheque')
         cheque_id=cheque_pool.search(cr, uid,[('bank_account_id', '=', bank_id)], context=context)
-#         vals['value']['bank_id'] = bank_id
-#         vals['value']['cheque_id'] = cheque_id
-#         vals['value'].update({ 'cheque_id' : cheque_id })
         return {'domain': {'cheque_id':[('id','in',cheque_id)]}}
 
     def onchange_company(self, cr, uid, ids, partner_id, journal_id, currency_id, company_id, context=None):
@@ -1431,7 +1432,18 @@ class account_voucher(osv.osv):
                 if len(rec_ids) >= 2:
                     reconcile = move_line_pool.reconcile_partial(cr, uid, rec_ids, writeoff_acc_id=voucher.writeoff_acc_id.id, writeoff_period_id=voucher.period_id.id, writeoff_journal_id=voucher.journal_id.id)
         return True
-
+    
+    @api.model
+    def create(self, vals):
+        record=models.Model.create(self, vals)
+        cheque_detail=self.env['cheque_detail'].browse(vals['cheque_detail_id'])
+        cheque_detail.write({
+            'amount':vals['amount'],
+            'state':'Issued',
+            'reference':vals['reference'],
+            'date_cheque':vals['date']})
+        return record
+     
 class account_voucher_line(osv.osv):
     _name = 'account.voucher.line'
     _description = 'Voucher Lines'
